@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">News App</string>
+    <string name="section_id">Section ID:</string>
+    <string name="published">Published :</string>
 </resources>
