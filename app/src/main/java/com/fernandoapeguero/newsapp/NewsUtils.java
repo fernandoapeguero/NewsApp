@@ -53,11 +53,12 @@ public class NewsUtils {
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
             urlConnection.setReadTimeout(1000 /* miliseconds */);
-            urlConnection.setConnectTimeout(1500 /* miliseconds */);
+            urlConnection.setConnectTimeout(15000 /* miliseconds */);
             urlConnection.connect();
 
             if (urlConnection.getResponseCode() == 200){
-                inputStream = urlConnection.getInputStream();
+                Log.e(LOG_TAG,"response code " + urlConnection.getResponseCode());
+               inputStream = urlConnection.getInputStream();
                 jsonResponse = readFromStream(inputStream);
             } else {
                 Log.e(LOG_TAG,"error code " + urlConnection.getResponseCode());
@@ -102,13 +103,19 @@ public class NewsUtils {
         List<NewsData> news = new ArrayList<>();
 
         try {
-            JSONObject baseReponse = new JSONObject(jsonNews);
-            JSONArray results = baseReponse.getJSONArray("results");
+            JSONObject baseResponse = new JSONObject(jsonNews);
+            JSONObject response = baseResponse.getJSONObject("response");
+            JSONArray results = response.getJSONArray("results");
             for (int i = 0; i < results.length() ; i++){
                 JSONObject currentResult = results.getJSONObject(i);
                 String title = currentResult.getString("webTitle");
                 String sectionId = currentResult.getString("sectionId");
-                String published = currentResult.getString("webPublishedDate");
+                String published;
+                if (currentResult.has("webPublicationDate")) {
+                     published = currentResult.getString("webPublicationDate");
+                } else {
+                      published = "Not Available";
+                }
                 String webUrl = currentResult.getString("webUrl");
 
                 NewsData theNews = new NewsData(title,sectionId,published,webUrl);
@@ -137,6 +144,6 @@ public class NewsUtils {
             Log.e(LOG_TAG,"problem making the http request" + e);
         }
          // change when finish extratdata method
-        return null;
+        return extractFeatureFromData(jsonReponse);
     }
 }

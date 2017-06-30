@@ -21,8 +21,6 @@ import butterknife.ButterKnife;
 public class NewsAdapter extends ArrayAdapter<NewsData> {
 
 
-
-
     public NewsAdapter(Activity context, ArrayList<NewsData> news) {
         super(context , 0 , news);
     }
@@ -55,7 +53,6 @@ public class NewsAdapter extends ArrayAdapter<NewsData> {
         if (currentNews != null) {
             holder.published.setText(currentNews.getmPublicationDate());
         }
-
 
         return convertView;
     }
