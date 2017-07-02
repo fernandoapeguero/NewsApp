@@ -26,27 +26,27 @@ public class NewsUtils {
 
     private static final String LOG_TAG = NewsUtils.class.getName();
 
-    private static URL createUrl (String stringUrl){
+    private static URL createUrl(String stringUrl) {
         URL url = null;
 
         try {
-            url =  new URL(stringUrl);
+            url = new URL(stringUrl);
         } catch (MalformedURLException e) {
-            Log.e(LOG_TAG," malformed error " + e);
+            Log.e(LOG_TAG, " malformed error " + e);
         }
 
         return url;
     }
 
-    private static String makeHttpRequest (URL url) throws IOException {
+    private static String makeHttpRequest(URL url) throws IOException {
 
         String jsonResponse = "";
 
-        if (url == null){
-            return jsonResponse ;
+        if (url == null) {
+            return jsonResponse;
         }
 
-        HttpURLConnection  urlConnection = null;
+        HttpURLConnection urlConnection = null;
         InputStream inputStream = null;
 
         try {
@@ -56,36 +56,36 @@ public class NewsUtils {
             urlConnection.setConnectTimeout(15000 /* miliseconds */);
             urlConnection.connect();
 
-            if (urlConnection.getResponseCode() == 200){
-                Log.e(LOG_TAG,"response code " + urlConnection.getResponseCode());
-               inputStream = urlConnection.getInputStream();
+            if (urlConnection.getResponseCode() == 200) {
+                Log.e(LOG_TAG, "response code " + urlConnection.getResponseCode());
+                inputStream = urlConnection.getInputStream();
                 jsonResponse = readFromStream(inputStream);
             } else {
-                Log.e(LOG_TAG,"error code " + urlConnection.getResponseCode());
+                Log.e(LOG_TAG, "error code " + urlConnection.getResponseCode());
             }
 
         } catch (IOException e) {
-            Log.e(LOG_TAG,"error retrieving the news from json result , e");
+            Log.e(LOG_TAG, "error retrieving the news from json result , e");
         } finally {
-            if (urlConnection != null){
+            if (urlConnection != null) {
                 urlConnection.disconnect();
             }
-            if (inputStream != null){
+            if (inputStream != null) {
                 inputStream.close();
             }
         }
 
-     return jsonResponse ;
+        return jsonResponse;
     }
 
     private static String readFromStream(InputStream inputStream) throws IOException {
         StringBuilder output = new StringBuilder();
 
-        if (inputStream != null){
+        if (inputStream != null) {
             InputStreamReader inputReader = new InputStreamReader(inputStream, Charset.forName("UTF-8"));
             BufferedReader reader = new BufferedReader(inputReader);
             String line = reader.readLine();
-            while (line != null){
+            while (line != null) {
                 output.append(line);
                 line = reader.readLine();
             }
@@ -94,9 +94,9 @@ public class NewsUtils {
         return output.toString();
     }
 
-    public static List<NewsData> extractFeatureFromData(String jsonNews){
+    public static List<NewsData> extractFeatureFromData(String jsonNews) {
 
-        if (TextUtils.isEmpty(jsonNews)){
+        if (TextUtils.isEmpty(jsonNews)) {
             return null;
         }
 
@@ -106,19 +106,19 @@ public class NewsUtils {
             JSONObject baseResponse = new JSONObject(jsonNews);
             JSONObject response = baseResponse.getJSONObject("response");
             JSONArray results = response.getJSONArray("results");
-            for (int i = 0; i < results.length() ; i++){
+            for (int i = 0; i < results.length(); i++) {
                 JSONObject currentResult = results.getJSONObject(i);
                 String title = currentResult.getString("webTitle");
                 String sectionId = currentResult.getString("sectionId");
                 String published;
                 if (currentResult.has("webPublicationDate")) {
-                     published = currentResult.getString("webPublicationDate");
+                    published = currentResult.getString("webPublicationDate");
                 } else {
-                      published = "Not Available";
+                    published = "Not Available";
                 }
                 String webUrl = currentResult.getString("webUrl");
 
-                NewsData theNews = new NewsData(title,sectionId,published,webUrl);
+                NewsData theNews = new NewsData(title, sectionId, published, webUrl);
 
                 news.add(theNews);
 
@@ -132,7 +132,7 @@ public class NewsUtils {
 
     }
 
-    public static List<NewsData> fetchNewsData(String requestUrl){
+    public static List<NewsData> fetchNewsData(String requestUrl) {
 
         URL url = createUrl(requestUrl);
 
@@ -141,9 +141,9 @@ public class NewsUtils {
         try {
             jsonReponse = makeHttpRequest(url);
         } catch (IOException e) {
-            Log.e(LOG_TAG,"problem making the http request" + e);
+            Log.e(LOG_TAG, "problem making the http request" + e);
         }
-         // change when finish extratdata method
+        // change when finish extratdata method
         return extractFeatureFromData(jsonReponse);
     }
 }

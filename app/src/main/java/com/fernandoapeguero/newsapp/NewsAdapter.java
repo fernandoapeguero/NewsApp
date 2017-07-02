@@ -20,6 +20,8 @@ import butterknife.ButterKnife;
 
 public class NewsAdapter extends ArrayAdapter<NewsData> {
 
+    private static final String SEPARATOR = "T";
+    private static final String TIME_SEPARATOR = "Z";
 
     public NewsAdapter(Activity context, ArrayList<NewsData> news) {
         super(context , 0 , news);
@@ -48,12 +50,32 @@ public class NewsAdapter extends ArrayAdapter<NewsData> {
 
         if (currentNews != null) {
             holder.sectionId.setText(currentNews.getmWebSectionId());
+
         }
 
-        if (currentNews != null) {
-            holder.published.setText(currentNews.getmPublicationDate());
+        String originalDateAndTime = currentNews.getmPublicationDate();
+
+        String date;
+        String time = "";
+
+        if (originalDateAndTime.contains(SEPARATOR)){
+
+            String[] parts = originalDateAndTime.split(SEPARATOR);
+            date = parts[0];
+
+            if (parts[1].contains("Z")){
+              String currentTime = parts[1].toString();
+                String[] theTime = currentTime.split(TIME_SEPARATOR);
+               time = theTime[0];
+            }
+
+        } else {
+            date = "not Available";
+            time = "not available";
         }
 
+        holder.published.setText(date);
+        holder.time.setText(time);
         return convertView;
     }
 
@@ -65,10 +87,10 @@ public class NewsAdapter extends ArrayAdapter<NewsData> {
         @BindView(R.id.web_title) TextView webTitle;
         @BindView(R.id.section_id) TextView sectionId;
         @BindView(R.id.date) TextView published;
+        @BindView(R.id.time) TextView time;
 
         public ViewHolder(View view){
             ButterKnife.bind(this, view);
         }
-
     }
 }
